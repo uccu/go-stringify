@@ -96,22 +96,29 @@ func ToString(i interface{}, subs ...interface{}) string {
 	return ""
 }
 
-func getReflectValue(value interface{}) reflect.Value {
+func GetReflectValue(value interface{}) reflect.Value {
 
 	var valueElement reflect.Value
+
 	if e, ok := value.(reflect.Value); ok {
 		valueElement = e
 	} else {
 		valueElement = reflect.ValueOf(value)
-		if valueElement.Kind() == reflect.Interface {
-			valueElement = reflect.ValueOf(valueElement.Interface())
-		}
 	}
+
 	if valueElement.Kind() == reflect.Ptr {
-		return valueElement.Elem()
-	} else {
-		return valueElement
+		valueElement = valueElement.Elem()
 	}
+
+	if valueElement.Kind() == reflect.Interface {
+		valueElement = reflect.ValueOf(valueElement.Interface())
+	}
+
+	if valueElement.Kind() == reflect.Ptr {
+		valueElement = valueElement.Elem()
+	}
+
+	return valueElement
 }
 
 func ToInt(i interface{}) int64 {
