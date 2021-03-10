@@ -15,7 +15,19 @@ type Int interface {
 	Int() int64
 }
 
-func ToString(i interface{}, subs ...string) string {
+type Uint interface {
+	Uint() uint64
+}
+
+type Float interface {
+	Float() float64
+}
+
+type Bool interface {
+	Bool() bool
+}
+
+func ToString(i interface{}, subs ...interface{}) string {
 
 	valueElement := getReflectValue(i)
 	valueTypeKind := valueElement.Type().Kind()
@@ -48,8 +60,8 @@ func ToString(i interface{}, subs ...string) string {
 	}
 
 	if valueTypeKind <= reflect.Float64 {
-		if len(subs) > 0 && subs[0] != "" {
-			f, _ := strconv.ParseInt(subs[0], 10, 64)
+		if len(subs) > 0 {
+			f := ToInt(subs[0])
 			return strconv.FormatFloat(valueElement.Float(), 'f', int(f), 64)
 		}
 		return fmt.Sprintf("%v", valueElement.Float())
@@ -57,31 +69,48 @@ func ToString(i interface{}, subs ...string) string {
 
 	if valueTypeKind == reflect.Slice {
 
-		if _, ok := valueElement.Interface().([]string); !ok {
-			return ""
+		if e, ok := valueElement.Interface().([]uint8); ok {
+			return string(e)
 		}
+
+		if e, ok := valueElement.Interface().([]byte); ok {
+			return string(e)
+		}
+
+		sli := []string{}
 		sub := ","
-		if len(subs) > 0 && subs[0] != "" {
-			sub = subs[0]
+		subSubs := subs
+		if len(subs) > 0 {
+			sub = ToString(subs[0])
+			subSubs = subSubs[1:]
 		}
-		return strings.Join((valueElement.Slice(0, valueElement.Cap()).Interface()).([]string), sub)
+
+		for i := 0; i < valueElement.Len(); i++ {
+			value := ToString(valueElement.Index(i), subSubs...)
+			sli = append(sli, value)
+		}
+
+		return strings.Join(sli, sub)
 	}
 
 	return ""
 }
 
 func getReflectValue(value interface{}) reflect.Value {
+
+	var valueElement reflect.Value
 	if e, ok := value.(reflect.Value); ok {
-		return e
+		valueElement = e
 	} else {
-		valueElement := reflect.ValueOf(value)
-		valueElement = reflect.ValueOf(valueElement.Interface())
-		valueTypeKind := valueElement.Type().Kind()
-		if valueTypeKind == reflect.Ptr {
-			return valueElement.Elem()
-		} else {
-			return valueElement
+		valueElement = reflect.ValueOf(value)
+		if valueElement.Kind() == reflect.Interface {
+			valueElement = reflect.ValueOf(valueElement.Interface())
 		}
+	}
+	if valueElement.Kind() == reflect.Ptr {
+		return valueElement.Elem()
+	} else {
+		return valueElement
 	}
 }
 
@@ -122,5 +151,210 @@ func ToInt(i interface{}) int64 {
 		return v
 	}
 
+	if valueTypeKind == reflect.Slice {
+
+		if e, ok := valueElement.Interface().([]byte); ok {
+			v, _ := strconv.ParseInt(string(e), 10, 64)
+			return v
+		}
+
+		return int64(valueElement.Len())
+	}
+
 	return 0
+}
+
+func ToUint(i interface{}) uint64 {
+
+	valueElement := getReflectValue(i)
+	valueTypeKind := valueElement.Type().Kind()
+
+	if e, ok := valueElement.Interface().(Uint); ok {
+		return e.Uint()
+	}
+
+	if valueTypeKind == reflect.Invalid {
+		return 0
+	}
+
+	if valueTypeKind == reflect.Bool {
+		if valueElement.Bool() == true {
+			return 1
+		}
+		return 0
+	}
+
+	if valueTypeKind <= reflect.Int64 {
+		return uint64(valueElement.Int())
+	}
+
+	if valueTypeKind <= reflect.Uintptr {
+		return valueElement.Uint()
+	}
+
+	if valueTypeKind <= reflect.Float64 {
+		return uint64(valueElement.Float())
+	}
+
+	if valueTypeKind == reflect.String {
+		v, _ := strconv.ParseUint(valueElement.String(), 10, 64)
+		return v
+	}
+
+	if valueTypeKind == reflect.Slice {
+
+		if e, ok := valueElement.Interface().([]byte); ok {
+			v, _ := strconv.ParseUint(string(e), 10, 64)
+			return v
+		}
+
+		return uint64(valueElement.Len())
+	}
+
+	return 0
+}
+
+func ToFloat(i interface{}) float64 {
+
+	valueElement := getReflectValue(i)
+	valueTypeKind := valueElement.Type().Kind()
+
+	if e, ok := valueElement.Interface().(Float); ok {
+		return e.Float()
+	}
+
+	if valueTypeKind == reflect.Invalid {
+		return 0
+	}
+
+	if valueTypeKind == reflect.Bool {
+		if valueElement.Bool() == true {
+			return 1
+		}
+		return 0
+	}
+
+	if valueTypeKind <= reflect.Int64 {
+		return float64(valueElement.Int())
+	}
+
+	if valueTypeKind <= reflect.Uintptr {
+		return float64(valueElement.Uint())
+	}
+
+	if valueTypeKind <= reflect.Float64 {
+		return valueElement.Float()
+	}
+
+	if valueTypeKind == reflect.String {
+		v, _ := strconv.ParseFloat(valueElement.String(), 10)
+		return v
+	}
+
+	if valueTypeKind == reflect.Slice {
+
+		if e, ok := valueElement.Interface().([]byte); ok {
+			v, _ := strconv.ParseFloat(string(e), 10)
+			return v
+		}
+
+		return float64(valueElement.Len())
+	}
+
+	return 0
+}
+
+func ToBool(i interface{}, subs ...interface{}) bool {
+
+	valueElement := getReflectValue(i)
+	valueTypeKind := valueElement.Type().Kind()
+
+	if e, ok := valueElement.Interface().(Bool); ok {
+		return e.Bool()
+	}
+
+	if valueTypeKind == reflect.Invalid {
+		return false
+	}
+
+	if valueTypeKind == reflect.Bool {
+		return valueElement.Bool()
+	}
+
+	if valueTypeKind <= reflect.Int64 {
+		if valueElement.Int() != 0 {
+			return true
+		}
+		return false
+	}
+
+	if valueTypeKind <= reflect.Uintptr {
+		if valueElement.Uint() != 0 {
+			return true
+		}
+		return false
+	}
+
+	if valueTypeKind <= reflect.Float64 {
+		if valueElement.Float() != 0 {
+			return true
+		}
+		return false
+	}
+
+	if valueTypeKind == reflect.String {
+		str := valueElement.String()
+
+		if len(subs) > 0 {
+			f := ToBool(subs[0])
+			if f == true {
+				if str == "" || str == "0" || str == "false" {
+					return false
+				}
+				return true
+			}
+		}
+
+		if str != "" {
+			return true
+		}
+	}
+
+	if valueTypeKind == reflect.Slice {
+		if e, ok := valueElement.Interface().([]byte); ok {
+			return ToBool(string(e), subs...)
+		}
+	}
+
+	return false
+}
+
+func ToStringSlice(i string, subs ...interface{}) []string {
+
+	sli := []string{i}
+	sub := []string{}
+	if len(subs) > 0 {
+		subElement := getReflectValue(subs[0])
+		if subElement.Kind() == reflect.Slice {
+			for i := 0; i < subElement.Len(); i++ {
+				sub = append(sub, ToString(subElement.Index(i)))
+			}
+		}
+		if subElement.Kind() == reflect.String {
+			sub = append(sub, subElement.String())
+		}
+	} else {
+		sub = append(sub, ",")
+	}
+
+	for _, v := range sub {
+		s := []string{}
+		for _, v2 := range sli {
+			s = append(s, strings.Split(v2, v)...)
+		}
+		sli = s
+	}
+
+	return sli
+
 }

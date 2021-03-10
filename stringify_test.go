@@ -27,6 +27,18 @@ func TestString(t *testing.T) {
 		t.Error("err")
 	}
 	log.Println("success", s)
+
+	s = ToString([]byte{119, 119, 119})
+	if s != "www" {
+		t.Error("err")
+	}
+	log.Println("success", s)
+
+	s = ToString(&[]uint8{119, 119, 119})
+	if s != "www" {
+		t.Error("err")
+	}
+	log.Println("success", s)
 }
 
 func TestInt(t *testing.T) {
@@ -221,6 +233,34 @@ func TestSlice(t *testing.T) {
 	}
 	log.Println("success", s)
 
+	s = ToString([]int{1, 2, 3}, "")
+	if s != "123" {
+		t.Error("err")
+	}
+	log.Println("success", s)
+
+	s = ToString([]E{E("3"), E("4")}, "")
+	if s != "22" {
+		t.Error("err")
+	}
+	log.Println("success", s)
+
+	s = ToString([]F{F("3"), F("4")}, "")
+	if s != "34" {
+		t.Error("err")
+	}
+	log.Println("success", s)
+
+}
+
+func TestSliceInSlice(t *testing.T) {
+
+	s := ToString([][]int{{1, 2}, {3, 4}}, "-")
+	if s != "1,2-3,4" {
+		t.Error("err")
+	}
+	log.Println("success", s)
+
 }
 
 func TestIntString(t *testing.T) {
@@ -311,6 +351,40 @@ func TestEmpty(t *testing.T) {
 	var i []string
 	s := ToInt(i)
 	if s != 0 {
+		t.Error("err")
+	}
+	log.Println("success", s)
+
+}
+
+func TestBools(t *testing.T) {
+
+	s := ToBool("1")
+	if s != true {
+		t.Error("err")
+	}
+	log.Println("success", s)
+
+	s = ToBool("0")
+	if s != true {
+		t.Error("err")
+	}
+	log.Println("success", s)
+
+	s = ToBool("0", 1)
+	if s != false {
+		t.Error("err")
+	}
+	log.Println("success", s)
+
+	s = ToBool(1)
+	if s != true {
+		t.Error("err")
+	}
+	log.Println("success", s)
+
+	s = ToBool(0.0)
+	if s != false {
 		t.Error("err")
 	}
 	log.Println("success", s)
