@@ -29,7 +29,7 @@ type Bool interface {
 
 func ToString(i interface{}, subs ...interface{}) string {
 
-	valueElement := getReflectValue(i)
+	valueElement := GetReflectValue(i)
 	valueTypeKind := valueElement.Type().Kind()
 
 	if e, ok := valueElement.Interface().(String); ok {
@@ -123,7 +123,7 @@ func GetReflectValue(value interface{}) reflect.Value {
 
 func ToInt(i interface{}) int64 {
 
-	valueElement := getReflectValue(i)
+	valueElement := GetReflectValue(i)
 	valueTypeKind := valueElement.Type().Kind()
 
 	if e, ok := valueElement.Interface().(Int); ok {
@@ -173,7 +173,7 @@ func ToInt(i interface{}) int64 {
 
 func ToUint(i interface{}) uint64 {
 
-	valueElement := getReflectValue(i)
+	valueElement := GetReflectValue(i)
 	valueTypeKind := valueElement.Type().Kind()
 
 	if e, ok := valueElement.Interface().(Uint); ok {
@@ -223,7 +223,7 @@ func ToUint(i interface{}) uint64 {
 
 func ToFloat(i interface{}) float64 {
 
-	valueElement := getReflectValue(i)
+	valueElement := GetReflectValue(i)
 	valueTypeKind := valueElement.Type().Kind()
 
 	if e, ok := valueElement.Interface().(Float); ok {
@@ -273,7 +273,7 @@ func ToFloat(i interface{}) float64 {
 
 func ToBool(i interface{}, subs ...interface{}) bool {
 
-	valueElement := getReflectValue(i)
+	valueElement := GetReflectValue(i)
 	valueTypeKind := valueElement.Type().Kind()
 
 	if e, ok := valueElement.Interface().(Bool); ok {
@@ -341,7 +341,7 @@ func ToStringSlice(i string, subs ...interface{}) []string {
 	sli := []string{i}
 	sub := []string{}
 	if len(subs) > 0 {
-		subElement := getReflectValue(subs[0])
+		subElement := GetReflectValue(subs[0])
 		if subElement.Kind() == reflect.Slice {
 			for i := 0; i < subElement.Len(); i++ {
 				sub = append(sub, ToString(subElement.Index(i)))
