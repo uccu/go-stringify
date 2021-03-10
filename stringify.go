@@ -11,6 +11,10 @@ type String interface {
 	String() string
 }
 
+type Int interface {
+	Int() int64
+}
+
 func ToString(i interface{}, subs ...string) string {
 
 	valueElement := getReflectValue(i)
@@ -22,6 +26,10 @@ func ToString(i interface{}, subs ...string) string {
 
 	if valueTypeKind == reflect.String {
 		return valueElement.String()
+	}
+
+	if valueTypeKind == reflect.Invalid {
+		return ""
 	}
 
 	if valueTypeKind == reflect.Bool {
@@ -75,4 +83,44 @@ func getReflectValue(value interface{}) reflect.Value {
 			return valueElement
 		}
 	}
+}
+
+func ToInt(i interface{}) int64 {
+
+	valueElement := getReflectValue(i)
+	valueTypeKind := valueElement.Type().Kind()
+
+	if e, ok := valueElement.Interface().(Int); ok {
+		return e.Int()
+	}
+
+	if valueTypeKind == reflect.Invalid {
+		return 0
+	}
+
+	if valueTypeKind == reflect.Bool {
+		if valueElement.Bool() == true {
+			return 1
+		}
+		return 0
+	}
+
+	if valueTypeKind <= reflect.Int64 {
+		return valueElement.Int()
+	}
+
+	if valueTypeKind <= reflect.Uintptr {
+		return int64(valueElement.Uint())
+	}
+
+	if valueTypeKind <= reflect.Float64 {
+		return int64(valueElement.Float())
+	}
+
+	if valueTypeKind == reflect.String {
+		v, _ := strconv.ParseInt(valueElement.String(), 10, 64)
+		return v
+	}
+
+	return 0
 }

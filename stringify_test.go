@@ -222,3 +222,97 @@ func TestSlice(t *testing.T) {
 	log.Println("success", s)
 
 }
+
+func TestIntString(t *testing.T) {
+
+	s := ToInt("123")
+	if s != 123 {
+		t.Error("err")
+	}
+	log.Println("success", s)
+
+	str := "123"
+	s = ToInt(&str)
+	if s != 123 {
+		t.Error("err")
+	}
+	log.Println("success", s)
+
+	var e E = "123"
+	s = ToInt(e)
+	if s != 123 {
+		t.Error("err")
+	}
+	log.Println("success", s)
+
+	var f F = "123"
+	s = ToInt(&f)
+	if s != 123 {
+		t.Error("err")
+	}
+	log.Println("success", s)
+
+}
+
+func TestIntBool(t *testing.T) {
+
+	s := ToInt(true)
+	if s != 1 {
+		t.Error("err")
+	}
+	log.Println("success", s)
+
+	s = ToInt(false)
+	if s != 0 {
+		t.Error("err")
+	}
+	log.Println("success", s)
+
+}
+
+func TestIntFloat(t *testing.T) {
+
+	var i float64 = 123123.1241231204
+	s := ToInt(i)
+	if s != 123123 {
+		t.Error("err")
+	}
+	log.Println("success", s)
+
+}
+
+type IE int
+type IF int
+
+func (v IE) Int() int64 {
+	return 2
+}
+
+func TestIntInt(t *testing.T) {
+
+	var i IE = 123123
+	s := ToInt(&i)
+	if s != 2 {
+		t.Error("err")
+	}
+	log.Println("success", s)
+
+	var i2 IF = 123123
+	s = ToInt(i2)
+	if s != 123123 {
+		t.Error("err")
+	}
+	log.Println("success", s)
+
+}
+
+func TestEmpty(t *testing.T) {
+
+	var i []string
+	s := ToInt(i)
+	if s != 0 {
+		t.Error("err")
+	}
+	log.Println("success", s)
+
+}
