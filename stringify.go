@@ -69,10 +69,6 @@ func ToString(i interface{}, subs ...interface{}) string {
 
 	if valueTypeKind == reflect.Slice {
 
-		if e, ok := valueElement.Interface().([]uint8); ok {
-			return string(e)
-		}
-
 		if e, ok := valueElement.Interface().([]byte); ok {
 			return string(e)
 		}
