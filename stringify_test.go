@@ -263,6 +263,16 @@ func TestSliceInSlice(t *testing.T) {
 
 }
 
+func TestToSlice(t *testing.T) {
+
+	s := ToStringSlice("")
+	if len(s) != 0 {
+		t.Error("err")
+	}
+	log.Println("success", s)
+
+}
+
 func TestIntString(t *testing.T) {
 
 	s := ToInt("123")

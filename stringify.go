@@ -334,6 +334,10 @@ func ToBool(i interface{}, subs ...interface{}) bool {
 
 func ToStringSlice(i string, subs ...interface{}) []string {
 
+	if i == "" {
+		return []string{}
+	}
+
 	sli := []string{i}
 	sub := []string{}
 	if len(subs) > 0 {
