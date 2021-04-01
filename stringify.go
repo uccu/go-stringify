@@ -361,3 +361,15 @@ func ToStringSlice(i string, subs ...interface{}) []string {
 	return sli
 
 }
+
+func ToIntSlice(i string, subs ...interface{}) []int64 {
+
+	stringSlice := ToStringSlice(i, subs...)
+	intSlice := make([]int64, len(stringSlice))
+
+	for k, v := range stringSlice {
+		intSlice[k], _ = strconv.ParseInt(v, 10, 64)
+	}
+
+	return intSlice
+}
