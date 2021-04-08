@@ -30,7 +30,7 @@ type Bool interface {
 func ToString(i interface{}, subs ...interface{}) string {
 
 	valueElement := GetReflectValue(i)
-	valueTypeKind := valueElement.Type().Kind()
+	valueTypeKind := valueElement.Kind()
 
 	if e, ok := valueElement.Interface().(String); ok {
 		return e.String()
@@ -92,35 +92,31 @@ func ToString(i interface{}, subs ...interface{}) string {
 	return ""
 }
 
-func GetReflectValue(value interface{}) reflect.Value {
-
-	var valueElement reflect.Value
-
-	if e, ok := value.(reflect.Value); ok {
-		valueElement = e
-	} else {
-		valueElement = reflect.ValueOf(value)
+func GetReflectValue(v interface{}) reflect.Value {
+	if e, ok := v.(reflect.Value); ok {
+		return getElem(e)
 	}
 
-	if valueElement.Kind() == reflect.Ptr {
-		valueElement = valueElement.Elem()
+	return getElem(reflect.ValueOf(v))
+}
+
+func getElem(v reflect.Value) reflect.Value {
+
+	if v.Kind() == reflect.Ptr {
+		return getElem(v.Elem())
 	}
 
-	if valueElement.Kind() == reflect.Interface {
-		valueElement = reflect.ValueOf(valueElement.Interface())
+	if v.Kind() == reflect.Interface {
+		return getElem(reflect.ValueOf(v.Interface()))
 	}
 
-	if valueElement.Kind() == reflect.Ptr {
-		valueElement = valueElement.Elem()
-	}
-
-	return valueElement
+	return v
 }
 
 func ToInt(i interface{}) int64 {
 
 	valueElement := GetReflectValue(i)
-	valueTypeKind := valueElement.Type().Kind()
+	valueTypeKind := valueElement.Kind()
 
 	if e, ok := valueElement.Interface().(Int); ok {
 		return e.Int()
@@ -170,7 +166,7 @@ func ToInt(i interface{}) int64 {
 func ToUint(i interface{}) uint64 {
 
 	valueElement := GetReflectValue(i)
-	valueTypeKind := valueElement.Type().Kind()
+	valueTypeKind := valueElement.Kind()
 
 	if e, ok := valueElement.Interface().(Uint); ok {
 		return e.Uint()
@@ -220,7 +216,7 @@ func ToUint(i interface{}) uint64 {
 func ToFloat(i interface{}) float64 {
 
 	valueElement := GetReflectValue(i)
-	valueTypeKind := valueElement.Type().Kind()
+	valueTypeKind := valueElement.Kind()
 
 	if e, ok := valueElement.Interface().(Float); ok {
 		return e.Float()
@@ -270,7 +266,7 @@ func ToFloat(i interface{}) float64 {
 func ToBool(i interface{}, subs ...interface{}) bool {
 
 	valueElement := GetReflectValue(i)
-	valueTypeKind := valueElement.Type().Kind()
+	valueTypeKind := valueElement.Kind()
 
 	if e, ok := valueElement.Interface().(Bool); ok {
 		return e.Bool()
