@@ -102,12 +102,8 @@ func GetReflectValue(v interface{}) reflect.Value {
 
 func getElem(v reflect.Value) reflect.Value {
 
-	if v.Kind() == reflect.Ptr {
+	if v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface {
 		return getElem(v.Elem())
-	}
-
-	if v.Kind() == reflect.Interface {
-		return getElem(reflect.ValueOf(v.Interface()))
 	}
 
 	return v
