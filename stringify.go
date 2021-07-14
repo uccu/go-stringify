@@ -32,16 +32,16 @@ func ToString(i interface{}, subs ...interface{}) string {
 	valueElement := GetReflectValue(i)
 	valueTypeKind := valueElement.Kind()
 
+	if valueTypeKind == reflect.Invalid {
+		return ""
+	}
+
 	if e, ok := valueElement.Interface().(String); ok {
 		return e.String()
 	}
 
 	if valueTypeKind == reflect.String {
 		return valueElement.String()
-	}
-
-	if valueTypeKind == reflect.Invalid {
-		return ""
 	}
 
 	if valueTypeKind == reflect.Bool {
@@ -114,12 +114,12 @@ func ToInt(i interface{}) int64 {
 	valueElement := GetReflectValue(i)
 	valueTypeKind := valueElement.Kind()
 
-	if e, ok := valueElement.Interface().(Int); ok {
-		return e.Int()
-	}
-
 	if valueTypeKind == reflect.Invalid {
 		return 0
+	}
+
+	if e, ok := valueElement.Interface().(Int); ok {
+		return e.Int()
 	}
 
 	if valueTypeKind == reflect.Bool {
@@ -164,12 +164,12 @@ func ToUint(i interface{}) uint64 {
 	valueElement := GetReflectValue(i)
 	valueTypeKind := valueElement.Kind()
 
-	if e, ok := valueElement.Interface().(Uint); ok {
-		return e.Uint()
-	}
-
 	if valueTypeKind == reflect.Invalid {
 		return 0
+	}
+
+	if e, ok := valueElement.Interface().(Uint); ok {
+		return e.Uint()
 	}
 
 	if valueTypeKind == reflect.Bool {
@@ -214,12 +214,12 @@ func ToFloat(i interface{}) float64 {
 	valueElement := GetReflectValue(i)
 	valueTypeKind := valueElement.Kind()
 
-	if e, ok := valueElement.Interface().(Float); ok {
-		return e.Float()
-	}
-
 	if valueTypeKind == reflect.Invalid {
 		return 0
+	}
+
+	if e, ok := valueElement.Interface().(Float); ok {
+		return e.Float()
 	}
 
 	if valueTypeKind == reflect.Bool {
@@ -264,12 +264,12 @@ func ToBool(i interface{}, subs ...interface{}) bool {
 	valueElement := GetReflectValue(i)
 	valueTypeKind := valueElement.Kind()
 
-	if e, ok := valueElement.Interface().(Bool); ok {
-		return e.Bool()
-	}
-
 	if valueTypeKind == reflect.Invalid {
 		return false
+	}
+
+	if e, ok := valueElement.Interface().(Bool); ok {
+		return e.Bool()
 	}
 
 	if valueTypeKind == reflect.Bool {
